@@ -1,0 +1,154 @@
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     udp  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0            udp spt:4500 state ESTABLISHED
+    0     0 ACCEPT     udp  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0            udp dpt:500
+    0     0 ACCEPT     udp  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0            udp dpt:4500
+    0     0 ACCEPT     udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:500
+    0     0 ACCEPT     udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:4500
+2986K  182M delegate_input  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     all  --  br-lan eth0.2  0.0.0.0/0            0.0.0.0/0            policy match dir out pol ipsec
+    0     0 ACCEPT     all  --  eth0.2 br-lan  0.0.0.0/0            0.0.0.0/0            policy match dir in pol ipsec
+ 5320  452K delegate_forward  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     udp  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0            udp dpt:500
+    0     0 ACCEPT     udp  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0            udp dpt:4500
+    0     0 ACCEPT     udp  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0            udp spt:4500
+3011K  197M delegate_output  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain delegate_forward (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 5320  452K forwarding_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for forwarding */
+ 2660  230K ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ 2660  222K zone_lan_forward  all  --  br-lan *       0.0.0.0/0            0.0.0.0/0           
+    0     0 zone_wan_forward  all  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0           
+
+Chain delegate_input (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+2105K  124M ACCEPT     all  --  lo     *       0.0.0.0/0            0.0.0.0/0           
+ 882K   58M input_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for input */
+64342 7676K ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ 2907  155K syn_flood  tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp flags:0x17/0x02
+ 817K   50M zone_lan_input  all  --  br-lan *       0.0.0.0/0            0.0.0.0/0           
+  303 22605 zone_wan_input  all  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0           
+
+Chain delegate_output (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+2105K  124M ACCEPT     all  --  *      lo      0.0.0.0/0            0.0.0.0/0           
+ 906K   72M output_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for output */
+ 894K   71M ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ 1314  421K zone_lan_output  all  --  *      br-lan  0.0.0.0/0            0.0.0.0/0           
+10794  777K zone_wan_output  all  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0           
+
+Chain forwarding_lan_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain forwarding_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 5320  452K zk_appid_chain  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+ 2681  224K zk_flt_chain  all  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0           
+
+Chain forwarding_wan_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain input_lan_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain input_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain input_wan_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain output_lan_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain output_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain output_wan_rule (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain reject (2 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 REJECT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with tcp-reset
+  292 22253 REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with icmp-port-unreachable
+
+Chain syn_flood (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 2907  155K RETURN     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp flags:0x17/0x02 limit: avg 25/sec burst 50
+    0     0 DROP       all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zk_appid_chain (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 2638  227K APPID      all  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0            APPID dir in
+ 2682  225K APPID      all  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0            APPID dir out
+
+Chain zk_flt_chain (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain zone_lan_dest_ACCEPT (2 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 1314  421K ACCEPT     all  --  *      br-lan  0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_lan_forward (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 2660  222K forwarding_lan_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for forwarding */
+ 2660  222K zone_wan_dest_ACCEPT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* forwarding lan -> wan */
+    0     0 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate DNAT /* Accept port forwards */
+    0     0 zone_lan_dest_ACCEPT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_lan_input (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 817K   50M input_lan_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for input */
+    0     0 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate DNAT /* Accept port redirections */
+ 817K   50M zone_lan_src_ACCEPT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_lan_output (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 1314  421K output_lan_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for output */
+ 1314  421K zone_lan_dest_ACCEPT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_lan_src_ACCEPT (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+ 817K   50M ACCEPT     all  --  br-lan *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_wan_dest_ACCEPT (2 references)
+ pkts bytes target     prot opt in     out     source               destination         
+13454  999K ACCEPT     all  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_wan_dest_REJECT (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 reject     all  --  *      eth0.2  0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_wan_forward (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 forwarding_wan_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for forwarding */
+    0     0 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate DNAT /* Accept port forwards */
+    0     0 zone_wan_dest_REJECT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_wan_input (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+  303 22605 input_wan_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for input */
+    0     0 ACCEPT     udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:68 /* Allow-DHCP-Renew */
+    0     0 ACCEPT     icmp --  *      *       0.0.0.0/0            0.0.0.0/0            icmptype 8 /* Allow-Ping */
+   11   352 ACCEPT     2    --  *      *       0.0.0.0/0            0.0.0.0/0            /* Allow-IGMP */
+    0     0 ACCEPT     esp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* @rule[7] */
+    0     0 ACCEPT     ah   --  *      *       0.0.0.0/0            0.0.0.0/0            /* @rule[7] */
+    0     0 ACCEPT     udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:500 /* @rule[8] */
+    0     0 ACCEPT     udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:4500 /* @rule[9] */
+    0     0 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate DNAT /* Accept port redirections */
+  292 22253 zone_wan_src_REJECT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_wan_output (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+10794  777K output_wan_rule  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* user chain for output */
+10794  777K zone_wan_dest_ACCEPT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain zone_wan_src_REJECT (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+  292 22253 reject     all  --  eth0.2 *       0.0.0.0/0            0.0.0.0/0           
